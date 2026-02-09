@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / Build
+build/
+dist/
+*.spec
+
+# Virtual Environment
+.env
+venv/
+env/
+cbt_env/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Local Config (Just in case)
+.key
+config.json
+.gemini_cbt_solver/
+
+# Zip files
+*.zip
