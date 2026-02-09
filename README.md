@@ -15,7 +15,7 @@ Gemini Vision API를 활용한 스마트한 CBT 문제 풀이 도구입니다.
 
 ## 설치 및 실행 (Installation)
 
-### [다운로드 (Releases)](https://github.com/사용자아이디/GeminiCBT_solver/releases)
+### [다운로드 (Releases)](https://github.com/rochelobeJYJ/GeminiCBT_solver/releases)
 
 - 위 링크에서 최신 버전(`GeminiCBT_solver.zip`)을 다운로드하고 실행하면 됩니다. (설치 X)
 - 압축을 풀고 GeminiCBT_solver.exe를 실행합니다.
