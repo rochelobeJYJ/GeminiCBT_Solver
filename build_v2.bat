@@ -21,6 +21,7 @@ if exist GeminiCBT_solver.spec del GeminiCBT_solver.spec
 
 echo [3/3] Building executable...
 "%ENV_PYINSTALLER%" --noconfirm --onedir --windowed --name "GeminiCBT_solver" ^
+    --icon "icon.ico" ^
     --add-binary "%SSL_DLL%;." ^
     --add-binary "%CRYPTO_DLL%;." ^
     --hidden-import "PyQt6" ^
@@ -31,6 +32,7 @@ echo [3/3] Building executable...
     --exclude-module "pandas" ^
     --exclude-module "scipy" ^
     --add-data "src;src" ^
+    --add-data "icon.ico;." ^
     --clean ^
     main.py
 

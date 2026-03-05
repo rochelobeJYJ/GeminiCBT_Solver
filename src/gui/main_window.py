@@ -3,13 +3,14 @@ from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QPushButton, QLabel, QCheckBox,
                              QLineEdit, QTextBrowser, QApplication,
                              QProgressBar, QSizePolicy, QMessageBox, QGroupBox)
+
 from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal, QSize, QRect
 from PyQt6.QtGui import QAction, QPainter, QColor, QPen
 
 from src.utils import ConfigManager
 from src.gemini_client import GeminiSolver
 from src.gui.snipping_tool import SnippingTool
-from src.gui.dialogs import ApiKeyDialog
+from src.gui.dialogs import ApiKeyDialog, DEFAULT_MODEL
 
 import tempfile
 
@@ -109,6 +110,7 @@ class MainWindow(QMainWindow):
         
         self.config_manager = ConfigManager()
         self.api_key = None
+        self.current_model = DEFAULT_MODEL
         self.solver = None
         self.snipping_tool = None
         
@@ -286,6 +288,9 @@ class MainWindow(QMainWindow):
 
     def _check_api_key(self):
         key = self.config_manager.load_api_key()
+        saved_model = self.config_manager.load_model()
+        if saved_model:
+            self.current_model = saved_model
         if key:
             self.api_key = key
             self._init_solver()
@@ -295,12 +300,13 @@ class MainWindow(QMainWindow):
     def _init_solver(self):
         if self.api_key:
             try:
-                self.solver = GeminiSolver(self.api_key)
+                self.solver = GeminiSolver(self.api_key, model_name=self.current_model)
+                self.status_msg.setText(f"준비 (모델: {self.current_model})")
             except Exception as e:
                 QMessageBox.critical(self, "오류", f"API 초기화 실패: {e}")
 
     def open_settings(self):
-        dialog = ApiKeyDialog(self)
+        dialog = ApiKeyDialog(self, current_model=self.current_model)
         if hasattr(self, 'api_key') and self.api_key:
             dialog.key_input.setText(self.api_key)
         if dialog.exec():
@@ -308,7 +314,12 @@ class MainWindow(QMainWindow):
             if new_key:
                 self.config_manager.save_api_key(new_key)
                 self.api_key = new_key
-                self._init_solver()
+            # Save model regardless
+            new_model = dialog.get_model()
+            if new_model:
+                self.current_model = new_model
+                self.config_manager.save_model(new_model)
+            self._init_solver()
 
     def toggle_always_on_top(self, checked):
         flags = self.windowFlags()

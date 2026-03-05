@@ -23,5 +23,5 @@ cbt_env/
 config.json
 .gemini_cbt_solver/
 
-# Zip files
-*.zip
+# Source icon (only .ico is needed)
+icon.png

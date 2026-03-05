@@ -39,21 +39,40 @@ class ConfigManager:
     def _load_key(self):
         return open(KEY_FILE, "rb").read()
 
-    def save_api_key(self, api_key: str):
-        encrypted_key = self.cipher_suite.encrypt(api_key.encode())
-        config = {"api_key": encrypted_key.decode()}
+    def _load_config(self) -> dict:
+        if not CONFIG_FILE.exists():
+            return {}
+        try:
+            with open(CONFIG_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return {}
+
+    def _save_config(self, config: dict):
         with open(CONFIG_FILE, "w") as f:
             json.dump(config, f)
 
+    def save_api_key(self, api_key: str):
+        config = self._load_config()
+        encrypted_key = self.cipher_suite.encrypt(api_key.encode())
+        config["api_key"] = encrypted_key.decode()
+        self._save_config(config)
+
     def load_api_key(self) -> str:
-        if not CONFIG_FILE.exists():
-            return None
-        try:
-            with open(CONFIG_FILE, "r") as f:
-                config = json.load(f)
-                encrypted_key = config.get("api_key")
-                if encrypted_key:
-                    return self.cipher_suite.decrypt(encrypted_key.encode()).decode()
-        except:
-            return None
+        config = self._load_config()
+        encrypted_key = config.get("api_key")
+        if encrypted_key:
+            try:
+                return self.cipher_suite.decrypt(encrypted_key.encode()).decode()
+            except:
+                return None
         return None
+
+    def save_model(self, model_name: str):
+        config = self._load_config()
+        config["model"] = model_name
+        self._save_config(config)
+
+    def load_model(self) -> str:
+        config = self._load_config()
+        return config.get("model", "")
